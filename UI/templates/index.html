@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Traffic Sign Detection</title>
+</head>
+<body>
+    <h1>Traffic Sign Detection</h1>
+    <form id="uploadForm" method="POST" enctype="multipart/form-data">
+        <label for="image">Upload an Image:</label>
+        <input type="file" id="image" name="image" accept="image/*" required>
+        <button type="submit">Predict</button>
+    </form>
+    <div id="result" style="margin-top: 20px;">
+        <h2>Result:</h2>
+        <img id="outputImage" src="" alt="Processed Image" style="max-width: 100%; height: auto;">
+    </div>
+    <script>
+        // JavaScript to handle form submission and display the result
+        const form = document.getElementById('uploadForm');
+        form.onsubmit = async function(event) {
+            event.preventDefault(); // Prevent form refresh
+
+            const formData = new FormData(form);
+            try {
+                // Send the image to the Flask backend
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                const result = await response.json();
+                if (result.image_url) {
+                    // Update the image source to display the processed image
+                    document.getElementById('outputImage').src = result.image_url;
+                } else {
+                    alert("Error: " + result.error); // Show error message
+                }
+            } catch (error) {
+                alert("An unexpected error occurred: " + error.message);
+            }
+        };
+    </script>
+</body>
+</html>
